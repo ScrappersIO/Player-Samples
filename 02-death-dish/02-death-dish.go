@@ -1,20 +1,20 @@
 package main
 
 import (
-	"io"
-	"log"
-	"net"
-	"flag"
-	"math"
-	"time"
 	"bufio"
 	"encoding/json"
+	"flag"
+	"io"
+	"log"
+	"math"
+	"net"
+	"time"
 )
 
 const (
-	MaxHealth int = 12
-	MaxPow int = 12
-	BotDiam float64 = 60
+	MaxHealth int     = 12
+	MaxPow    int     = 12
+	BotDiam   float64 = 60
 )
 
 var (
@@ -124,7 +124,9 @@ func runStrategy() {
 	for { // Loop indefinitely
 
 		theirBots = gdb.TheirBots()
-		if len(theirBots) == 0 {return}
+		if len(theirBots) == 0 {
+			return
+		}
 
 		// Determine center of enemy swarm
 		var x, y int
@@ -132,25 +134,27 @@ func runStrategy() {
 			x += bot.X
 			y += bot.Y
 		}
-		x = x/len(theirBots)
-		y = y/len(theirBots)
+		x = x / len(theirBots)
+		y = y / len(theirBots)
 
 		myBots = gdb.MyBots()
-		if len(myBots) == 0 {return}
+		if len(myBots) == 0 {
+			return
+		}
 
 		// This is the pivot point of our satellite dish
-		centerIndex := len(myBots)/2
+		centerIndex := len(myBots) / 2
 		centerBot := myBots[centerIndex]
 
 		// Keep distance... maybe back up a little
-		stayDist := distance(x, y, centerBot.X, centerBot.Y)*1.1
+		stayDist := distance(x, y, centerBot.X, centerBot.Y) * 1.1
 
 		// Determine angle of separation required to
 		// space my bots out shoulder to shoulder at
 		// the distance from target.
-		circumference := 2*math.Pi*stayDist
-		segments := circumference/BotDiam
-		radians := (2*math.Pi)/segments
+		circumference := 2 * math.Pi * stayDist
+		segments := circumference / BotDiam
+		radians := (2 * math.Pi) / segments
 
 		// Find nearest enemy
 		closeDist := math.MaxFloat64
@@ -171,7 +175,7 @@ func runStrategy() {
 			angle := coordAngle(x, y, centerBot.X, centerBot.Y)
 
 			// Adjust angle for this bot's position in line
-			angle += radians*float64(i-centerIndex)
+			angle += radians * float64(i-centerIndex)
 
 			// Calculate position based on this angle and
 			// the desired distance.
@@ -185,8 +189,8 @@ func runStrategy() {
 			if firstTime {
 				send(bot.Power(0, 12, 0))
 
-			// After first time, move appropriate
-			// speed and target
+				// After first time, move appropriate
+				// speed and target
 			} else {
 				send(bot.Power(4, 4, 4))
 				send(bot.Target(closeBot))
@@ -194,13 +198,13 @@ func runStrategy() {
 		}
 
 		// Sleep for 100ms
-		time.Sleep(time.Second/10)
+		time.Sleep(time.Second / 10)
 
 		// Sleep extra long the first time to allow
 		// bots time to get into position.
 		if firstTime {
 			firstTime = false
-			time.Sleep(time.Second*2)
+			time.Sleep(time.Second * 2)
 		}
 	}
 }
@@ -339,7 +343,6 @@ func (gdb *GameDatabase) MyBots() []*GDBBot {
 	}
 	return bots
 }
-
 
 // TheirBots returns a pointer array of GDBBots NOT owned by us.
 func (gdb *GameDatabase) TheirBots() []*GDBBot {

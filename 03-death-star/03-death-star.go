@@ -1,20 +1,20 @@
 package main
 
 import (
-	"io"
-	"log"
-	"net"
-	"flag"
-	"math"
-	"time"
 	"bufio"
 	"encoding/json"
+	"flag"
+	"io"
+	"log"
+	"math"
+	"net"
+	"time"
 )
 
 const (
-	MaxHealth int = 12
-	MaxPow int = 12
-	BotDiam float64 = 60
+	MaxHealth int     = 12
+	MaxPow    int     = 12
+	BotDiam   float64 = 60
 )
 
 var (
@@ -119,14 +119,16 @@ func runStrategy() {
 	// - If a bot is out of position, divert fire power to movement.
 
 	var myBots, theirBots []*GDBBot
-	var keepDist float64 = BotDiam*20
-	const HurryDist float64 = BotDiam*3
-	const FireDist float64 = BotDiam/2
+	var keepDist float64 = BotDiam * 20
+	const HurryDist float64 = BotDiam * 3
+	const FireDist float64 = BotDiam / 2
 
 	for { // Loop indefinitely
 
 		theirBots = gdb.TheirBots()
-		if len(theirBots) == 0 {return}
+		if len(theirBots) == 0 {
+			return
+		}
 
 		// Determine center of enemy swarm
 		var x, y int
@@ -134,22 +136,24 @@ func runStrategy() {
 			x += bot.X
 			y += bot.Y
 		}
-		x = x/len(theirBots)
-		y = y/len(theirBots)
+		x = x / len(theirBots)
+		y = y / len(theirBots)
 
 		myBots = gdb.MyBots()
-		if len(myBots) == 0 {return}
+		if len(myBots) == 0 {
+			return
+		}
 
 		// This is the pivot point of our satellite dish
-		centerIndex := len(myBots)/2
+		centerIndex := len(myBots) / 2
 		centerBot := myBots[centerIndex]
 
 		// Determine angle of separation required to
 		// space my bots out shoulder to shoulder at
 		// the distance from target.
-		circumference := 2*math.Pi*keepDist
-		segments := circumference/BotDiam
-		radians := (2*math.Pi)/segments
+		circumference := 2 * math.Pi * keepDist
+		segments := circumference / BotDiam
+		radians := (2 * math.Pi) / segments
 
 		// Find nearest enemy
 		closeDist := math.MaxFloat64
@@ -170,7 +174,7 @@ func runStrategy() {
 			angle := coordAngle(x, y, centerBot.X, centerBot.Y)
 
 			// Adjust angle for this bot's position in line
-			angle += radians*float64(i-centerIndex)
+			angle += radians * float64(i-centerIndex)
 
 			// Calculate position based on this angle and
 			// the desired distance.
@@ -182,17 +186,17 @@ func runStrategy() {
 			send(bot.Target(closeBot))
 
 			// Determine power
-            distToPosition := distance(newX, newY, bot.X, bot.Y)
-            if distToPosition > HurryDist {
-                send(bot.Power(0, 7, 5))
-            } else if distToPosition <= FireDist {
-                send(bot.Power(5, 2, 5))
-            }
+			distToPosition := distance(newX, newY, bot.X, bot.Y)
+			if distToPosition > HurryDist {
+				send(bot.Power(0, 7, 5))
+			} else if distToPosition <= FireDist {
+				send(bot.Power(5, 2, 5))
+			}
 
 		}
 
 		// Sleep for 100ms
-		time.Sleep(time.Second/10)
+		time.Sleep(time.Second / 10)
 	}
 }
 
@@ -330,7 +334,6 @@ func (gdb *GameDatabase) MyBots() []*GDBBot {
 	}
 	return bots
 }
-
 
 // TheirBots returns a pointer array of GDBBots NOT owned by us.
 func (gdb *GameDatabase) TheirBots() []*GDBBot {

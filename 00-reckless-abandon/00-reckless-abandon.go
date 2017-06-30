@@ -1,15 +1,15 @@
 package main
 
 import (
+	"bufio"
+	"encoding/json"
+	"flag"
 	"io"
 	"log"
-	"net"
-	"flag"
 	"math"
-	"time"
-	"bufio"
 	"math/rand"
-	"encoding/json"
+	"net"
+	"time"
 )
 
 const (
@@ -128,14 +128,14 @@ func runStrategy() {
 	myBots = gdb.MyBots()
 	for _, bot := range myBots {
 		send(bot.Power(0, 11, 1))
-		radians := 2.0*math.Pi*rand.Float64()
+		radians := 2.0 * math.Pi * rand.Float64()
 		x := bot.X + int(math.Cos(radians)*999)
 		y := bot.Y + int(math.Sin(radians)*999)
 		send(bot.Move(x, y))
 	}
 
 	// Wait three seconds
-	time.Sleep(3*time.Second)
+	time.Sleep(3 * time.Second)
 
 	// Split power between speed and fire
 	for _, bot := range myBots {
@@ -197,7 +197,7 @@ func runStrategy() {
 			// We have our target!
 			target = closeBot
 
-		// If there is only one weak bot, it is our target.
+			// If there is only one weak bot, it is our target.
 		} else {
 			target = weakBots[0]
 		}
@@ -207,11 +207,13 @@ func runStrategy() {
 		for _, bot := range myBots {
 			send(bot.Follow(target))
 			send(bot.Target(target))
-			if firstTime { time.Sleep(time.Second/10) }
+			if firstTime {
+				time.Sleep(time.Second / 10)
+			}
 		}
 
 		// Sleep for 250ms
-		time.Sleep(time.Second/4)
+		time.Sleep(time.Second / 4)
 
 		firstTime = false
 	}
@@ -351,7 +353,6 @@ func (gdb *GameDatabase) MyBots() []*GDBBot {
 	}
 	return bots
 }
-
 
 // TheirBots returns a pointer array of GDBBots NOT owned by us.
 func (gdb *GameDatabase) TheirBots() []*GDBBot {

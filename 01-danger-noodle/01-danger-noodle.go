@@ -1,20 +1,20 @@
 package main
 
 import (
-	"io"
-	"log"
-	"net"
-	"flag"
-	"math"
-	"time"
 	"bufio"
 	"encoding/json"
+	"flag"
+	"io"
+	"log"
+	"math"
+	"net"
+	"time"
 )
 
 const (
-	MaxHealth int = 12
-	MaxPow int = 12
-	BotDiam float64 = 60
+	MaxHealth int     = 12
+	MaxPow    int     = 12
+	BotDiam   float64 = 60
 )
 
 var (
@@ -119,7 +119,7 @@ func runStrategy() {
 
 	var myBots, theirBots []*GDBBot
 	const MovePow int = 4
-	const Distance float64 = BotDiam*3
+	const Distance float64 = BotDiam * 3
 
 	for { // Loop indefinitely
 
@@ -134,7 +134,9 @@ func runStrategy() {
 
 				// Find closest bot
 				theirBots = gdb.TheirBots()
-				if len(theirBots) == 0 { continue }
+				if len(theirBots) == 0 {
+					continue
+				}
 				target := theirBots[0]
 				closeDist := distance(bot.X, bot.Y, target.X, target.Y)
 				for _, enemy := range theirBots {
@@ -153,13 +155,13 @@ func runStrategy() {
 
 				// Move around
 				angleRad := angle(target, bot)
-				angleRad += 2*math.Pi/360*10 // 10 degrees
+				angleRad += 2 * math.Pi / 360 * 10 // 10 degrees
 				x := int(math.Cos(angleRad)*Distance) + target.X
 				y := int(math.Sin(angleRad)*Distance) + target.Y
 				send(bot.Move(x, y))
 
-			// If not first bot, follows bot in front of it
-			// with shields high.
+				// If not first bot, follows bot in front of it
+				// with shields high.
 			} else {
 				send(bot.Follow(myBots[i-1]))
 				send(bot.Power(0, MovePow, MaxPow-MovePow))
@@ -167,7 +169,7 @@ func runStrategy() {
 		}
 
 		// Sleep for 100ms
-		time.Sleep(time.Second/10)
+		time.Sleep(time.Second / 10)
 	}
 }
 
@@ -305,7 +307,6 @@ func (gdb *GameDatabase) MyBots() []*GDBBot {
 	}
 	return bots
 }
-
 
 // TheirBots returns a pointer array of GDBBots NOT owned by us.
 func (gdb *GameDatabase) TheirBots() []*GDBBot {
